@@ -101,7 +101,7 @@ class TransactionRepository(
             Log.d("EuroTokenBlock", "Found null block!")
             return null
         } // Missing block
-        Log.d("getVerifiedBalanceForBl", "latest block found: proposal: ${block.isProposal}, \n" +
+        Log.d("getVerifiedBalanceForBl", "block found: proposal: ${block.isProposal}, \n" +
             "agreement: ${block.isAgreement}, \n" +
             "genesis: ${block.isGenesis}, \n" +
             "transaction: ${block.transaction}, \n" +
@@ -140,9 +140,6 @@ class TransactionRepository(
             ) && block.isProposal
         ) {
             Log.d("EuroTokenBlock", "Validation, sending money")
-            if (block.isGenesis) {
-                return block.transaction[KEY_BALANCE] as Long
-            }
             // block is sending money, but balance is not verified, subtract transfer amount and recurse
             val amount = (block.transaction[KEY_AMOUNT] as BigInteger).toLong()
             return getVerifiedBalanceForBlock(
@@ -207,12 +204,11 @@ class TransactionRepository(
     }
 
     fun getMyVerifiedBalance(): Long {
-        Log.d("PEERDISCOVERY", "${trustChainCommunity.getPeers()}")
         val myPublicKey = IPv8Android.getInstance().myPeer.publicKey.keyToBin()
         val latestBlock = trustChainCommunity.database.getLatest(myPublicKey)
         if (latestBlock == null) {
-            Log.d("getMyVerifiedBalance", "no latest block, defaulting to initial balance")
-            return INITIAL_BALANCE
+            Log.d("getMyVerifiedBalance", "no latest block")
+            return 0
         }
         val myVerifiedBalance = getVerifiedBalanceForBlock(latestBlock,
                                                            trustChainCommunity.database)!!
@@ -1036,6 +1032,6 @@ class TransactionRepository(
         const val KEY_PAYMENT_ID = "payment_id"
         const val KEY_IBAN = "iban"
 
-        const val INITIAL_BALANCE: Long = 1000
+        var INITIAL_BALANCE: Long = 0
     }
 }
