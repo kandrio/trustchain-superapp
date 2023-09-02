@@ -24,6 +24,7 @@ fun getBalanceChangeForBlock(block: TrustChainBlock?): Long {
 }
 
 fun getVerifiedBalanceChangeForBlock(block: TrustChainBlock?): Long {
+    Log.d("getVerifiedBalanceChang", "Getting change for block")
     if (block == null) return 0
     if (block.transaction[TransactionRepository.KEY_AMOUNT]?.toString()?.contains("BTC") == true) return 0
     if (block.isAgreement || block.type == TransactionRepository.BLOCK_TYPE_ROLLBACK) { // block is receiving money, dont add

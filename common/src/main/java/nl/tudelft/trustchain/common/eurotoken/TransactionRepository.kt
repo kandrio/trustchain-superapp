@@ -208,7 +208,7 @@ class TransactionRepository(
         val latestBlock = trustChainCommunity.database.getLatest(myPublicKey)
         if (latestBlock == null) {
             Log.d("getMyVerifiedBalance", "no latest block")
-            return 0
+            return INITIAL_BALANCE
         }
         val myVerifiedBalance = getVerifiedBalanceForBlock(latestBlock,
                                                            trustChainCommunity.database)!!

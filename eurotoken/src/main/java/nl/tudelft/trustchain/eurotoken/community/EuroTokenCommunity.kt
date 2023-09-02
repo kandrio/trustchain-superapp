@@ -167,20 +167,13 @@ class EuroTokenCommunity(
      */
     fun sendAddressesOfLastTransactions(peer: Peer, num: Int = 50) {
         val pref = myContext.getSharedPreferences(EUROTOKEN_SHARED_PREF_NAME, Context.MODE_PRIVATE)
-        val demoModeEnabled = pref.getBoolean(DEMO_MODE_ENABLED, false)
 
         val addresses : ArrayList<String> = ArrayList()
         // Add own public key to list of addresses.
         addresses.add(myPeer.publicKey.keyToBin().toHex())
-        if (demoModeEnabled) {
-            // Generate [num] addresses if in demo mode
-            addresses.addAll(generatePublicKeys(num))
-        } else {
-            // Get all addresses of the last [num] incoming transactions
-            addresses.addAll(transactionRepository.getTransactions(num).map { transaction: Transaction ->
-                transaction.sender.toString()
-            })
-        }
+        addresses.addAll(transactionRepository.getTransactions(num).map { transaction: Transaction ->
+            transaction.sender.toString()
+        })
 
         val payload = TransactionsPayload(EVAId.EVA_LAST_ADDRESSES, addresses.joinToString(separator = ",").toByteArray())
 
